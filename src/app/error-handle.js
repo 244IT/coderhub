@@ -2,7 +2,6 @@ const errorType = require('../constants/error-types')
 
 const errorHandle = (error, ctx) => {
   console.log('进入错误分类处理')
-  console.log(error)
   let status, message
   switch(error.message) {
     case errorType.NAME_OR_PASSWORD_IS_REQUIRED:
@@ -20,6 +19,10 @@ const errorHandle = (error, ctx) => {
     case errorType.PASSWORD_ERROR:
       status = 400;
       message = '密码错误~';
+      break;
+    case errorType.UNAUTHORIZATION:
+      status = 401;
+      message = '未授权token~';
       break;
     default: 
       status = 404;

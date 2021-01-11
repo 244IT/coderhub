@@ -2,16 +2,12 @@ const bodyParser = require('koa-bodyparser')
 
 const app = require('./app/index')
 const config = require('./app/config')
-const userRouter = require('./router/user.router')
-const authRouter = require('./router/user.auth')
 const errorHandle = require('./app/error-handle')
+const useRoutes = require('./router/index')
 
 
 app.use(bodyParser()) // 顺序在router之前
-app.use(userRouter.routes())
-app.use(userRouter.allowedMethods())
-app.use(authRouter.routes())
-app.use(authRouter.allowedMethods())
+useRoutes(app)
 
 app.on('error', errorHandle)
 
