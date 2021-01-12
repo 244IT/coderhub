@@ -36,11 +36,16 @@ const verifyLogin = async (ctx, next) => {
 /* 登录验证 */
 const verifyAuth = async (ctx, next) => {
   console.log('验证登录的middleware')
+  console.log(ctx.header)
   // 获取token
   const authorization = ctx.header.authorization
+  // 没有传token情况处理
+  if(!authorization) {
+    const error = new Error(errorType.UNAUTHORIZATION)
+    return ctx.app.emit('error', error, ctx)
+  }
   const token = authorization.replace('Bearer ', '')
-  console.log(token)
-  // 验证token
+  // 验证token合法性
   try {
     const result = jwt.verify(token, PUBLIC_KEY, {
       algorithms: ['RS256']
@@ -49,7 +54,7 @@ const verifyAuth = async (ctx, next) => {
     await next()
   } catch(err) {
     const error = new Error(errorType.UNAUTHORIZATION)
-    ctx.app.emit('error', error, ctx)
+    return ctx.app.emit('error', error, ctx)
   }
 }
 
