@@ -1,10 +1,12 @@
 const jwt = require('jsonwebtoken')
 
 const errorType = require('../constants/error-types')
-const service = require('../service/user.service')
+const userService = require('../service/user.service')
+const sourceService = require('../service/source.service')
 const md5password = require('../utils/handle-password')
 const { PUBLIC_KEY } = require('../app/config')
 
+/* 登录验证 */
 const verifyLogin = async (ctx, next) => {
   // 获取账号密码
   const { name, password } = ctx.request.body 
@@ -15,7 +17,7 @@ const verifyLogin = async (ctx, next) => {
     return ctx.app.emit('error', error, ctx)
   }
   // 判断用户是否存在
-  const result = await service.getUserByName(name)
+  const result = await userService.getUserByName(name)
   const user = result[0]
   console.log(user)
   if(!user) {
@@ -33,7 +35,7 @@ const verifyLogin = async (ctx, next) => {
   await next()
 }
 
-/* 登录验证 */
+/* 权限验证 */
 const verifyAuth = async (ctx, next) => {
   console.log('验证登录的middleware')
   console.log(ctx.header)
@@ -58,7 +60,24 @@ const verifyAuth = async (ctx, next) => {
   }
 }
 
+/* 修改权限验证 */
+const verifyPermission = async (ctx, next) => {
+  console.log('修改动态的middleware')
+  
+  const { id } = ctx.user
+  const { momentId } = ctx.request.body
+  console.log(id, momentId)
+  const result = await sourceService.getMoment(id, momentId)
+  if(!result) {
+    const error = new Error(errorType.UNPERMISSION)
+    return ctx.app.emit('error', error, ctx)
+  }
+  console.log(result)
+  await next()
+}
+
 module.exports = {
   verifyLogin,
-  verifyAuth
+  verifyAuth,
+  verifyPermission
 }

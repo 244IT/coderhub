@@ -26,9 +26,7 @@ class MomentService {
 
     /* 获取动态列表 */
     async list(size, page) {
-        console.log(size, page)
         const offset = (page - 1) * 10
-        console.log('offset' + offset, size)
         const statement = `
             SELECT m.id momentId, m.content, m.updateAt updateTime, m.createAt createTime, JSON_OBJECT('userId', u.id, 'userName', u.name) author
             FROM moment m
@@ -37,7 +35,27 @@ class MomentService {
             LIMIT ?, ?;
         `
         const [result] = await connection.execute(statement, [offset, size])
-        console.log(result)
+        return result
+    }
+
+    /* 修改动态 */
+    async update(momentId, content) {
+        console.log(momentId, content)
+        const statement = `
+            UPDATE moment SET content = ? WHERE id = ?;
+        `
+
+        const [result] = await connection.execute(statement, [content, momentId])
+        return result
+    }
+
+    /* 删除动态 */
+    async remove() {
+        const statement = `
+            UPDATE moment SET content = ? WHERE id = ?;
+        `
+
+        const [result] = await connection.execute(statement, [content, momentId])
         return result
     }
 }
