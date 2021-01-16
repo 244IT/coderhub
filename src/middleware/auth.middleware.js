@@ -1,10 +1,13 @@
 const jwt = require('jsonwebtoken')
 
 const errorType = require('../constants/error-types')
-const service = require('../service/user.service')
+const UserService = require('../service/user.service')
+const AuthService = require('../service/auth.service')
 const md5password = require('../utils/handle-password')
 const { PUBLIC_KEY } = require('../app/config')
+const authService = require('../service/auth.service')
 
+/* 验证登录权限 */
 const verifyLogin = async (ctx, next) => {
   // 获取账号密码
   const { name, password } = ctx.request.body 
@@ -15,7 +18,7 @@ const verifyLogin = async (ctx, next) => {
     return ctx.app.emit('error', error, ctx)
   }
   // 判断用户是否存在
-  const result = await service.getUserByName(name)
+  const result = await UserService.getUserByName(name)
   const user = result[0]
   console.log(user)
   if(!user) {
@@ -33,7 +36,7 @@ const verifyLogin = async (ctx, next) => {
   await next()
 }
 
-/* 登录验证 */
+/* 验证token权限 */
 const verifyAuth = async (ctx, next) => {
   console.log('验证登录的middleware')
   console.log(ctx.header)
@@ -58,7 +61,32 @@ const verifyAuth = async (ctx, next) => {
   }
 }
 
+/* 验证资源修改权限 */
+const verifyPermission = async (ctx, next) => {
+  console.log('验证资源修改的middleware')
+  // 获取要验证的表名和资源id
+  console.log(ctx.params)
+  const [ resourceKey ] = Object.keys(ctx.params)
+  console.log(resourceKey)
+  const tableName = resourceKey.replace('Id', '')
+  const resourceId = ctx.params[resourceKey]
+  // 获取用户的id
+  const { id } = ctx.user
+  // 查询此用户是否有修改的权限
+  try {
+    let result = await AuthService.checkSource(id, resourceId, tableName)
+    if(!result) {
+      throw new Error()
+    }
+    await next()
+  }catch(err) {
+    const error = new Error(errorType.UNPERMISION)
+    return ctx.app.emit('error', error, ctx)
+  }
+}
+
 module.exports = {
   verifyLogin,
-  verifyAuth
+  verifyAuth,
+  verifyPermission
 }

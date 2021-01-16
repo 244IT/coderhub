@@ -25,19 +25,36 @@ class MomentService {
     }
 
     /* 获取动态列表 */
-    async list(size, page) {
-        console.log(size, page)
+    async list(size = 10, page = 1) {
         const offset = (page - 1) * 10
-        console.log('offset' + offset, size)
         const statement = `
-            SELECT m.id momentId, m.content, m.updateAt updateTime, m.createAt createTime, JSON_OBJECT('userId', u.id, 'userName', u.name) author
+            SELECT m.id momentId, m.content, m.updateAt updateTime, m.createAt createTime, 
+            JSON_OBJECT('userId', u.id, 'userName', u.name) author,
+            (SELECT COUNT(*) FROM comment c WHERE c.moment_id = m.id) commentCount 
             FROM moment m
             LEFT JOIN user u
             ON m.user_id = u.id
             LIMIT ?, ?;
         `
         const [result] = await connection.execute(statement, [offset, size])
-        console.log(result)
+        return result
+    }
+
+    /* 修改动态 */
+    async update(momentId, content) {
+        const statement = `
+            UPDATE moment SET content = ? WHERE id = ?;
+        `
+        const result = await connection.execute(statement, [content, momentId])
+        return result
+    }
+
+    /* 删除动态 */
+    async remove(momentId) {
+        const statement = `
+            DELETE FROM moment WHERE id = ?;
+        `
+        const result = await connection.execute(statement, [momentId])
         return result
     }
 }
