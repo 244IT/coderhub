@@ -24,7 +24,7 @@ const errorHandle = (error, ctx) => {
       status = 401;
       message = '未授权token~';
       break;
-    case errorType.UNPERMISION:
+    case errorType.UNPERMISSION:
       status = 401;
       message = '没有操作的权限~';
       break;

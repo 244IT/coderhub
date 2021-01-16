@@ -3,7 +3,7 @@ const USER_ALREADT_EXIST = 'user already exist'
 const USER_DOSE_NOT_EXIST = 'user dose not exist'
 const PASSWORD_ERROR = 'password error'
 const UNAUTHORIZATION = 'unauthorization'
-const UNPERMISION = 'unpermision'
+const UNPERMISSION = 'unpermision'
 
 
 module.exports = {
@@ -12,5 +12,5 @@ module.exports = {
   USER_DOSE_NOT_EXIST,
   PASSWORD_ERROR,
   UNAUTHORIZATION,
-  UNPERMISION
+  UNPERMISSION
 }
