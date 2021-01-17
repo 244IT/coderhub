@@ -5,7 +5,6 @@ const UserService = require('../service/user.service')
 const AuthService = require('../service/auth.service')
 const md5password = require('../utils/handle-password')
 const { PUBLIC_KEY } = require('../app/config')
-const authService = require('../service/auth.service')
 
 /* 验证登录权限 */
 const verifyLogin = async (ctx, next) => {
@@ -44,15 +43,18 @@ const verifyAuth = async (ctx, next) => {
   const authorization = ctx.header.authorization
   // 没有传token情况处理
   if(!authorization) {
+    console.log('没传token')
     const error = new Error(errorType.UNAUTHORIZATION)
     return ctx.app.emit('error', error, ctx)
   }
   const token = authorization.replace('Bearer ', '')
   // 验证token合法性
   try {
+    console.log('验证登录合法性')
     const result = jwt.verify(token, PUBLIC_KEY, {
       algorithms: ['RS256']
     })
+    console.log(result)
     ctx.user = result
     await next()
   } catch(err) {
@@ -75,12 +77,14 @@ const verifyPermission = async (ctx, next) => {
   // 查询此用户是否有修改的权限
   try {
     let result = await AuthService.checkSource(id, resourceId, tableName)
+    console.log(result)
     if(!result) {
       throw new Error()
     }
+    console.log('资源修改验证成功')
     await next()
   }catch(err) {
-    const error = new Error(errorType.UNPERMISION)
+    const error = new Error(errorType.UNPERMISSION)
     return ctx.app.emit('error', error, ctx)
   }
 }

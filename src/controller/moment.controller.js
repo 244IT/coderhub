@@ -1,4 +1,4 @@
-const { create, detail, list, update, remove } = require("../service/moment.service")
+const { create, detail, list, update, remove, getConnection, addConnection } = require("../service/moment.service")
 
 class MomentController{
     /* 新增动态 */
@@ -46,6 +46,23 @@ class MomentController{
         // 删除动态
         const result = await remove(momentId)
         ctx.body = result 
+    }
+
+    /* 添加标签 */
+    async addLabel(ctx, next) {
+        // 获取动态id和添加的标签id
+        const { momentId } = ctx.params
+        const { labels } = ctx
+        // 获取标签
+        for(let label of labels) {
+            // 如果动态已经有这个标签关系，则跳过
+            await getConnection(momentId, label.id)
+            if(!connectionResult.length) {
+                await addConnection(momentId, label.id)
+            }
+
+        }
+        ctx.body = '添加标签成功'
     }
 }
 

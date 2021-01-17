@@ -41,12 +41,25 @@ class CommentService {
   /* 根据动态id获取评论列表 */
   async getCommentsByMomentId(momentId) {
     const statement = `
-      SELECT c.id commentId, content, c.comment_id replyCommentId, c.createAt createTime,
-      JSON_OBJECT('id', u.id, 'name', u.name) user
+      SELECT 
+      c.id commentId, content, c.comment_id replyCommentId, c.moment_id momentId, c.createAt replyTime,
+      JSON_OBJECT('id', u.id, 'name', u.name) user,
+      (
+        SELECT 
+        JSON_ARRAYAGG(
+          JSON_OBJECT('id', com.id, 'content', com.content, 'replyCommentId', com.comment_id, 'momentId', com.moment_id, 'replyTime', com.createAt, 'user', 
+            JSON_OBJECT('id', usr.id, 'name', usr.name)
+          )
+        ) 
+        FROM comment com 
+        LEFT JOIN user usr
+        ON com.user_id = usr.id
+        WHERE com.comment_id = c.id
+      ) replyList
       FROM comment c
-      LEFT JOIN user u
+      LEFT JOIN user u 
       ON c.user_id = u.id
-      WHERE moment_id = ?;
+      WHERE c.moment_id = ? AND c.comment_id IS NULL; 
     `
     const [result] = await connection.execute(statement, [momentId])
     return result

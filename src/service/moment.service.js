@@ -57,6 +57,24 @@ class MomentService {
         const result = await connection.execute(statement, [momentId])
         return result
     }
+
+    /* 获取动态和标签的关系 */
+    async getConnection(momentId, labelId) {
+        const statement = `
+            SELECT * FROM moment_label WHERE moment_id = ? AND label_id = ?
+        `
+        const [result] = await connection.execute(statement, [momentId, labelId])
+        return result
+    }
+
+    /* 添加动态和标签的关系 */
+    async addConnection(momentId, labelId) {
+        const statement = `
+            INSERT INTO moment_label (moment_id, label_id) VALUES (?, ?);
+        `
+        const [result] = await connection.execute(statement, [momentId, labelId])
+        return result
+    }
 }
 
 module.exports = new MomentService()
