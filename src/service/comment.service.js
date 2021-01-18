@@ -11,11 +11,11 @@ class CommentService {
   }
 
   /* 回复评论 */
-  async reply(userId, momentId, content, commentId) {
+  async reply(userId, momentId, content, commentId, replyCommentId) {
     const statement = `
-      INSERT INTO comment (content, user_id, moment_id, comment_id) VALUES (?, ?, ?, ?);
+      INSERT INTO comment (content, user_id, moment_id, comment_id, reply_comment_id) VALUES (?, ?, ?, ?, ?);
     `
-    const result = await connection.execute(statement, [content, userId, momentId, commentId])
+    const result = await connection.execute(statement, [content, userId, momentId, commentId, replyCommentId])
     return result
   }
 
@@ -47,14 +47,22 @@ class CommentService {
       (
         SELECT 
         JSON_ARRAYAGG(
-          JSON_OBJECT('id', com.id, 'content', com.content, 'replyCommentId', com.comment_id, 'momentId', com.moment_id, 'replyTime', com.createAt, 'user', 
-            JSON_OBJECT('id', usr.id, 'name', usr.name)
+          JSON_OBJECT('commentId', com.id, 'content', com.content, 'replyCommentId', com.comment_id, 'momentId', com.moment_id, 'replyTime', com.createAt, 'user', 
+            JSON_OBJECT('id', usr.id, 'name', usr.name), 'replyUser', 
+            (
+              SELECT 
+              JSON_OBJECT('id', rusr.id, 'name', rusr.name)
+              FROM comment rcom
+              LEFT JOIN user rusr
+              ON rcom.user_id = rusr.id
+              WHERE rcom.id = com.comment_id
+            )
           )
         ) 
         FROM comment com 
         LEFT JOIN user usr
         ON com.user_id = usr.id
-        WHERE com.comment_id = c.id
+        WHERE com.reply_comment_id = c.id
       ) replyList
       FROM comment c
       LEFT JOIN user u 

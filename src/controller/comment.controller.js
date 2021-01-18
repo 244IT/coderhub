@@ -17,10 +17,10 @@ class CommentController{
     // 获取用户id，动态id，回复评论内容，回复的评论id
     const { id } = ctx.user
     const { commentId } = ctx.params
-    const { momentId, content } = ctx.request.body
+    const { momentId, content, replyCommentId } = ctx.request.body
 
     // 创建评论
-    const result = await reply(id, momentId, content, commentId)
+    const result = await reply(id, momentId, content, commentId, replyCommentId)
     ctx.body = result
   }
 
@@ -46,6 +46,7 @@ class CommentController{
 
   /* 获取动态下的评论列表 */
   async list(ctx, next) {
+    console.log('获取评论列表')
     // 获取动态的id
     const { momentId } = ctx.request.query
     console.log(momentId)
