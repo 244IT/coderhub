@@ -1,12 +1,24 @@
-const { create } = require('../service/user.service')
+const fs = require('fs')
 
+const { create } = require('../service/user.service')
+const { getAvatarByUserId } = require('../service/file.service')
+
+const { AVATAR_PATH } = require('../constants/file-paths')
 class UserController{
-  // 用户注册控制层函数
+  /* 用户注册 */
   async create(ctx, next) {
     const user = ctx.request.body
     const result = await create(user)
-    console.log('账号注册成功')
     ctx.body = result
+  }
+
+  /* 获取头像 */
+  async avatarInfo(ctx, next) {
+    const { userId } = ctx.params
+    const avatarInfo = await getAvatarByUserId(userId)
+    /* 提供图像信息 */
+    ctx.response.set('content-type', avatarInfo.mimetype)
+    ctx.body = fs.createReadStream(`${AVATAR_PATH}/${avatarInfo.filename}`);
   }
 }
 
