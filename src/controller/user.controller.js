@@ -14,6 +14,7 @@ class UserController{
 
   /* 获取头像 */
   async avatarInfo(ctx, next) {
+    console.log('获取用户头像')
     const { userId } = ctx.params
     const avatarInfo = await getAvatarByUserId(userId)
     /* 提供图像信息 */
