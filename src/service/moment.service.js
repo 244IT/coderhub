@@ -29,8 +29,13 @@ class MomentService {
         const offset = (page - 1) * 10
         const statement = `
             SELECT m.id momentId, m.content, m.updateAt updateTime, m.createAt createTime, 
-            JSON_OBJECT('userId', u.id, 'userName', u.name) author,
-            (SELECT COUNT(*) FROM comment c WHERE c.moment_id = m.id) commentCount 
+            JSON_OBJECT('userId', u.id, 'userName', u.name, 'avatar', u.avatar_url) author,
+            (SELECT COUNT(*) FROM comment c WHERE c.moment_id = m.id) commentCount,
+            (
+                SELECT JSON_ARRAYAGG(CONCAT('http://localhost/images/', file.filename))
+                FROM file
+                WHERE file.moment_id = m.id
+            ) images
             FROM moment m
             LEFT JOIN user u
             ON m.user_id = u.id

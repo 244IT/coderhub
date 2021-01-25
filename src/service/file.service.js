@@ -10,6 +10,15 @@ class FileService {
     return result
   }
 
+  /* 保存动态配图 */
+  async createPicture(mimetype, filename, size, userId, momentId) {
+    const statement = `
+      INSERT INTO file (filename, mimetype, size, user_id, moment_id) VALUES (?, ?, ?, ?, ?)
+    `
+    const result = await connection.execute(statement, [filename, mimetype, size, userId, momentId])
+    return result
+  }
+
   /* 获取头像 */
   async getAvatarByUserId(userId) {
     const statement = `
@@ -17,6 +26,16 @@ class FileService {
     `
 
     const [[result]] = await connection.execute(statement, [userId])
+    return result
+  }
+
+  /* 获取动态配图 */
+  async getFileByFileName(filename) {
+    const statement = `
+      SELECT * FROM file WHERE filename = ?
+    `
+
+    const [[result]] = await connection.execute(statement, [filename])
     return result
   }
 }

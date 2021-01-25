@@ -1,4 +1,9 @@
+const fs = require('fs')
+
 const { create, detail, list, update, remove, getConnection, addConnection } = require("../service/moment.service")
+const FileService = require('../service/file.service')
+
+const { PICTURE_PATH } = require('../constants/file-paths')
 
 class MomentController{
     /* 新增动态 */
@@ -63,6 +68,14 @@ class MomentController{
 
         }
         ctx.body = '添加标签成功'
+    }
+
+    /* 动态配图服务 */
+    async fileInfo(ctx, next) {
+        const { filename } = ctx.params
+        const fileInfo = await FileService.getFileByFileName(filename)
+        ctx.response.set('content-type', fileInfo.mimetype)
+        ctx.body = fs.createReadStream(`${PICTURE_PATH}/${fileInfo.filename}`)
     }
 }
 

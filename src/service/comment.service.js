@@ -48,10 +48,10 @@ class CommentService {
         SELECT 
         JSON_ARRAYAGG(
           JSON_OBJECT('commentId', com.id, 'content', com.content, 'replyCommentId', com.comment_id, 'momentId', com.moment_id, 'replyTime', com.createAt, 'user', 
-            JSON_OBJECT('id', usr.id, 'name', usr.name), 'replyUser', 
+            JSON_OBJECT('id', usr.id, 'name', usr.name, 'avatar', u.avatar_url), 'replyUser', 
             (
               SELECT 
-              JSON_OBJECT('id', rusr.id, 'name', rusr.name)
+              JSON_OBJECT('id', rusr.id, 'name', rusr.name, 'avatar', u.avatar_url)
               FROM comment rcom
               LEFT JOIN user rusr
               ON rcom.user_id = rusr.id
