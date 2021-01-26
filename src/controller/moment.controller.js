@@ -61,7 +61,7 @@ class MomentController{
         // 获取标签
         for(let label of labels) {
             // 如果动态已经有这个标签关系，则跳过
-            await getConnection(momentId, label.id)
+            const connectionResult = await getConnection(momentId, label.id)
             if(!connectionResult.length) {
                 await addConnection(momentId, label.id)
             }
@@ -72,10 +72,15 @@ class MomentController{
 
     /* 动态配图服务 */
     async fileInfo(ctx, next) {
-        const { filename } = ctx.params
+        let { filename } = ctx.params
+        const { type } = ctx.request.query
+        const typeArr = ['small', 'middle', 'large']
         const fileInfo = await FileService.getFileByFileName(filename)
+        if(typeArr.some(item => item === type)) {
+            filename = filename + '-' + type
+        }
         ctx.response.set('content-type', fileInfo.mimetype)
-        ctx.body = fs.createReadStream(`${PICTURE_PATH}/${fileInfo.filename}`)
+        ctx.body = fs.createReadStream(`${PICTURE_PATH}/${filename}`)      
     }
 }
 
