@@ -1,4 +1,4 @@
-const { create, reply, update, remove, getCommentsByMomentId } = require('../service/comment.service.js')
+const CommentService = require('../service/comment.service.js')
 
 class CommentController{
   /* 发表评论 */
@@ -8,7 +8,7 @@ class CommentController{
     const { content, momentId } = ctx.request.body
 
     // 创建评论
-    const result = await create(id, momentId, content)
+    const result = await CommentService.create(id, momentId, content)
     ctx.body = result
   }
 
@@ -20,7 +20,7 @@ class CommentController{
     const { momentId, content, replyCommentId } = ctx.request.body
 
     // 创建评论
-    const result = await reply(id, momentId, content, commentId, replyCommentId)
+    const result = await CommentService.reply(id, momentId, content, commentId, replyCommentId)
     ctx.body = result
   }
 
@@ -30,7 +30,7 @@ class CommentController{
     const { content } = ctx.request.body
     const { commentId } = ctx.params
     // 修改评论
-    const result = await update(commentId, content)
+    const result = await CommentService.update(commentId, content)
     ctx.body = result
   } 
 
@@ -40,19 +40,16 @@ class CommentController{
     const { commentId } = ctx.params
     console.log(commentId)
     // 删除评论
-    const result = await remove(commentId)
+    const result = await CommentService.remove(commentId)
     ctx.body = result
   }
 
   /* 获取动态下的评论列表 */
   async list(ctx, next) {
-    console.log('获取评论列表')
     // 获取动态的id
     const { momentId } = ctx.request.query
-    console.log(momentId)
-    console.log(ctx.request.body)
     // 根据动态id获取评论列表
-    const result = await getCommentsByMomentId(momentId)
+    const result = await CommentService.getCommentsByMomentId(momentId)
     ctx.body = result
   }
 } 

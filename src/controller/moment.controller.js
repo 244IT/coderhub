@@ -1,6 +1,6 @@
 const fs = require('fs')
 
-const { create, detail, list, update, remove, getConnection, addConnection } = require("../service/moment.service")
+const MomentService = require("../service/moment.service")
 const FileService = require('../service/file.service')
 
 const { PICTURE_PATH } = require('../constants/file-paths')
@@ -12,24 +12,24 @@ class MomentController{
         const { id } = ctx.user
         const { content } = ctx.request.body
         // 新增动态（操作数据库）
-        const result = await create(id, content)
+        const result = await MomentService.create(id, content)
         ctx.body = result
     }
-    /* 获取动态详情 */
-    async detail(ctx, next) {
-        // 获取动态id
-        const { id } = ctx.params
-        // 获取动态详情（操作数据库）
-        const result = await detail(id)
-        ctx.body = result
-    }
+/* 获取动态详情 */
+async detail(ctx, next) {
+    // 获取动态id
+    const { id } = ctx.params
+    // 获取动态详情（操作数据库）
+    const result = await MomentService.detail(id)
+    ctx.body = result
+}
 
     /* 获取动态列表 */
     async list(ctx, next) {
         // 获取列表大小和页数
         const { size, page } = ctx.request.query
         // 获取动态列表（操作数据库）
-        const result = await list(size, page)
+        const result = await MomentService.list(size, page)
         ctx.body = result
     }
 
@@ -39,7 +39,7 @@ class MomentController{
         const { content } = ctx.request.body
         const { momentId } = ctx.params
         // 修改动态
-        const result = await update(momentId, content)
+        const result = await MomentService.update(momentId, content)
         ctx.body = result
     }
 
@@ -49,7 +49,7 @@ class MomentController{
         const { momentId } = ctx.params
 
         // 删除动态
-        const result = await remove(momentId)
+        const result = await MomentService.remove(momentId)
         ctx.body = result 
     }
 
@@ -61,9 +61,9 @@ class MomentController{
         // 获取标签
         for(let label of labels) {
             // 如果动态已经有这个标签关系，则跳过
-            const connectionResult = await getConnection(momentId, label.id)
+            const connectionResult = await MomentService.getConnection(momentId, label.id)
             if(!connectionResult.length) {
-                await addConnection(momentId, label.id)
+                await MomentService.addConnection(momentId, label.id)
             }
 
         }

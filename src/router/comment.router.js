@@ -14,7 +14,7 @@ commentRouter.post('/reply/:commentId', verifyAuth, reply)
 commentRouter.patch('/:commentId', verifyAuth, verifyPermission, update)
 /* 删除评论接口 */
 commentRouter.delete('/:commentId', verifyAuth, verifyPermission, remove)
-/* 获取评论接口 */
+/* 获取评论列表接口 */
 commentRouter.get('/', list)
 
 module.exports = commentRouter
