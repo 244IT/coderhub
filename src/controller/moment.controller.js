@@ -15,14 +15,14 @@ class MomentController{
         const result = await MomentService.create(id, content)
         ctx.body = result
     }
-/* 获取动态详情 */
-async detail(ctx, next) {
-    // 获取动态id
-    const { id } = ctx.params
-    // 获取动态详情（操作数据库）
-    const result = await MomentService.detail(id)
-    ctx.body = result
-}
+    /* 获取动态详情 */
+    async detail(ctx, next) {
+        // 获取动态id
+        const { id } = ctx.params
+        // 获取动态详情（操作数据库）
+        const result = await MomentService.detail(id)
+        ctx.body = result
+    }
 
     /* 获取动态列表 */
     async list(ctx, next) {

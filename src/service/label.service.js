@@ -28,6 +28,18 @@ class LabelService {
     const [result] = await connection.execute(statement, [offset, size])
     return result
   }
+
+  /* 获取标签下的动态 */
+  async getMomentListByLabelId(labelId) {
+    const statement = `
+      SELECT * FROM moment_label ml
+      LEFT JOIN moment m
+      ON m.id = ml.moment_id
+      WHERE ml.label_id = ?;
+    `
+    const result = await connection.execute(statement, [labelId])
+    return result
+  }
 }
 
 module.exports = new LabelService()

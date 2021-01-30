@@ -1,4 +1,4 @@
-const { create, list } = require('../service/label.service.js')
+const LabelService = require('../service/label.service.js')
 
 class LabelController {
   /* 创建标签 */
@@ -7,7 +7,7 @@ class LabelController {
     const { name } = ctx.request.body
     ctx.body = '创建标签成功'
     // 创建标签
-    const result = await create(name)
+    const result = await LabelService.create(name)
     ctx.body = result
   }
 
@@ -17,7 +17,13 @@ class LabelController {
     // 获取页数和大小
     const { size, page } = ctx.request.query
     // 查询列表
-    const result = await list(size, page)
+    const result = await LabelService.list(size, page)
+    ctx.body = result
+  }
+  /* 获取指定标签下的动态 */
+  async momentList(ctx, next) {
+    const { labelId } = ctx.params
+    const [result] = await LabelService.getMomentListByLabelId(labelId)
     ctx.body = result
   }
 }
