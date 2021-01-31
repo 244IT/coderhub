@@ -10,14 +10,14 @@ class CommentService {
     return result
   }
 
-  /* 回复评论 */
-  async reply(userId, momentId, content, commentId, replyCommentId) {
-    const statement = `
-      INSERT INTO comment (content, user_id, moment_id, comment_id, reply_comment_id) VALUES (?, ?, ?, ?, ?);
-    `
-    const result = await connection.execute(statement, [content, userId, momentId, commentId, replyCommentId])
-    return result
-  }
+/* 回复评论 */
+async reply(userId, momentId, content, commentId, replyCommentId) {
+  const statement = `
+    INSERT INTO comment (content, user_id, moment_id, comment_id, reply_comment_id) VALUES (?, ?, ?, ?, ?);
+  `
+  const result = await connection.execute(statement, [content, userId, momentId, commentId, replyCommentId])
+  return result
+}
 
   /* 修改评论 */
   async update(commentId, content) {
