@@ -25,6 +25,27 @@ class UserService{
     const result = await connection.execute(statement, [avatarUrl, userId])
     return result
   }
+
+  /* 修改用户信息 */
+  async updateUserInfo(name, sign, id) {
+    let statement 
+    if(name && sign) {
+      statement = `
+        UPDATE user SET name = ?, sign = ? WHERE id = ?
+      `
+    }else if(sign){
+      statement = `
+        UPDATE user SET sign = ? WHERE id = ?
+      `
+    }else {
+      statement = `
+        UPDATE user SET name = ? WHERE id = ?
+      `
+    }
+    const paramsArr = [name, sign, id].filter(item => item)
+    const result = await connection.execute(statement, paramsArr)
+    return result
+  }
 }
 
 module.exports = new UserService()

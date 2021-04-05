@@ -2,7 +2,7 @@ const path = require('path')
 
 const Jimp = require('jimp')
 const Multer = require('koa-multer')
-const { PICTURE_PATH, AVATAR_PATH } = require('../constants/file-paths')
+const { PICTURE_PATH, AVATAR_PATH, LABEL_PATH } = require('../constants/file-paths')
 
 
 /* 头像上传处理 */
@@ -10,6 +10,12 @@ const avatarUpload = Multer({
   dest: AVATAR_PATH,
 })
 const avatarHandle = avatarUpload.single('avater')
+
+/* 标签图片上传处理 */
+const labelUpload = Multer({
+  dest: LABEL_PATH,
+})
+const labelHandle = labelUpload.single('label')
 
 
 /* 动态图片上传处理 */
@@ -21,6 +27,7 @@ const pictureHandle = pictureUpload.array('picture', 9)
 
 /* 图片大小剪裁 */
 const pictureRisize = async (ctx, next) => {
+  console.log('图片大小剪裁')
   const { files } = ctx.req
   for(let file of files) {
     const { destination, filename } = file
@@ -38,5 +45,6 @@ const pictureRisize = async (ctx, next) => {
 module.exports = {
   avatarHandle,
   pictureHandle,
-  pictureRisize
+  pictureRisize,
+  labelHandle
 }

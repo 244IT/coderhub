@@ -22,10 +22,11 @@ class FileService {
   /* 获取头像 */
   async getAvatarByUserId(userId) {
     const statement = `
-      SELECT * FROM avatar WHERE user_id = ?
+      SELECT * FROM avatar WHERE user_id = ? ORDER BY createAt DESC
     `
 
     const [[result]] = await connection.execute(statement, [userId])
+    console.log(result)
     return result
   }
 

@@ -9,7 +9,15 @@ class CommentController{
 
     // 创建评论
     const result = await CommentService.create(id, momentId, content)
-    ctx.body = result
+    console.log('创建评论成功')
+    console.log(result)
+    ctx.body = {
+      data: {
+        commentId: result.insertId
+      },
+      message: '评论成功',
+      status: '10000'
+    }
   }
 
   /* 回复评论 */
@@ -20,8 +28,17 @@ class CommentController{
     const { momentId, content, replyCommentId } = ctx.request.body
 
     // 创建评论
-    const result = await CommentService.reply(id, momentId, content, commentId, replyCommentId)
-    ctx.body = result
+    const [result] = await CommentService.reply(id, momentId, content, commentId, replyCommentId)
+    console.log('回复评论')
+    console.log(result)
+    
+    ctx.body = {
+      data: {
+        commentId: result.insertId
+      },
+      message: '回复评论成功',
+      status: '10000',
+    }
   }
 
   /* 修改评论 */
@@ -50,7 +67,11 @@ class CommentController{
     const { momentId } = ctx.request.query
     // 根据动态id获取评论列表
     const result = await CommentService.getCommentsByMomentId(momentId)
-    ctx.body = result
+    ctx.body = {
+      data: result,
+      message: 'SUCCESS',
+      status: '10000'
+    }
   }
 } 
 

@@ -43,7 +43,7 @@ async reply(userId, momentId, content, commentId, replyCommentId) {
     const statement = `
       SELECT 
       c.id commentId, content, c.comment_id replyCommentId, c.moment_id momentId, c.createAt replyTime,
-      JSON_OBJECT('id', u.id, 'name', u.name) user,
+      JSON_OBJECT('id', u.id, 'name', u.name, 'avatar', u.avatar_url) user,
       (
         SELECT 
         JSON_ARRAYAGG(

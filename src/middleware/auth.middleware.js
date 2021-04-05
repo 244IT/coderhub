@@ -55,9 +55,11 @@ const verifyAuth = async (ctx, next) => {
       algorithms: ['RS256']
     })
     console.log(result)
+    console.log('合法')
     ctx.user = result
     await next()
   } catch(err) {
+    console.log('不合法')
     const error = new Error(errorType.UNAUTHORIZATION)
     return ctx.app.emit('error', error, ctx)
   }
@@ -67,9 +69,7 @@ const verifyAuth = async (ctx, next) => {
 const verifyPermission = async (ctx, next) => {
   console.log('验证资源修改的middleware')
   // 获取要验证的表名和资源id
-  console.log(ctx.params)
   const [ resourceKey ] = Object.keys(ctx.params)
-  console.log(resourceKey)
   const tableName = resourceKey.replace('Id', '')
   const resourceId = ctx.params[resourceKey]
   // 获取用户的id

@@ -33,7 +33,10 @@ const errorHandle = (error, ctx) => {
       message = 'NOT FOUNT';
   }
   ctx.status = status
-  ctx.body = message
+  ctx.body = {
+    message,
+    status
+  }
 }
 
 module.exports = errorHandle
