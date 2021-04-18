@@ -46,6 +46,27 @@ class UserService{
     const result = await connection.execute(statement, paramsArr)
     return result
   }
+
+  /* 修改用户密码 */
+  async updatePassword(newPassword, name) {
+    console.log('修改密码service')
+    const statement = `
+      UPDATE user SET password = ? WHERE name = ?
+    `
+    const result = await connection.execute(statement, [newPassword, name])
+    console.log(result)
+    return result
+  }
+
+  /* 根据用户名获取密码 */
+  async getPasswordByUsername(name) {
+    console.log('name' + name)
+    const statement = `
+      SELECT * FROM user WHERE name = ?;
+    `
+    const [[result]] = await connection.execute(statement, [name])
+    return result
+  }
 }
 
 module.exports = new UserService()

@@ -39,6 +39,7 @@ class MomentService {
     /* 获取动态列表 */
     async list(size = 10, page = 1, keyword = '') {
         console.log('获取动态列表')
+        console.log(keyword, size, page)
         const offset = (page - 1) * 10
         const statement = `
             SELECT m.id momentId, m.content, m.updateAt updateTime, m.createAt createTime, m.title, 

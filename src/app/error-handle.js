@@ -20,6 +20,10 @@ const errorHandle = (error, ctx) => {
       status = 400;
       message = '密码错误~';
       break;
+    case errorType.PASSWORD_UNLIKE:
+      status = 400;
+      message = '原密码错误~';
+      break;
     case errorType.UNAUTHORIZATION:
       status = 401;
       message = '未授权token~';

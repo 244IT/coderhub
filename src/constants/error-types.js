@@ -4,6 +4,7 @@ const USER_DOSE_NOT_EXIST = 'user dose not exist'
 const PASSWORD_ERROR = 'password error'
 const UNAUTHORIZATION = 'unauthorization'
 const UNPERMISSION = 'unpermision'
+const PASSWORD_UNLIKE = 'password unlike'
 
 
 module.exports = {
@@ -12,5 +13,6 @@ module.exports = {
   USER_DOSE_NOT_EXIST,
   PASSWORD_ERROR,
   UNAUTHORIZATION,
-  UNPERMISSION
+  UNPERMISSION,
+  PASSWORD_UNLIKE
 }

@@ -22,7 +22,6 @@ momentRouter.post("/:momentId/labels", verifyAuth, verifyPermission, verifyLabel
 
 /* 获取某个用户的动态 */
 momentRouter.get('/userList', verifyAuth, userList)
-
 /* 动态配图服务 */
 momentRouter.get('/images/:filename', fileInfo)
 

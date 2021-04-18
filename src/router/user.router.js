@@ -1,8 +1,8 @@
 const Router = require('koa-router')
 
-const { verifyUser, handlePassword } = require('../middleware/user.middleware')
+const { verifyUser, handlePassword, verifyPassword } = require('../middleware/user.middleware')
 const { verifyAuth } = require('../middleware/auth.middleware') 
-const { create, avatarInfo, update } = require('../controller/user.controller')
+const { create, avatarInfo, update, updatePassword } = require('../controller/user.controller')
 
 
 const userRouter = new Router({
@@ -11,6 +11,8 @@ const userRouter = new Router({
 
 /* 用户注册 */
 userRouter.post('/', verifyUser, handlePassword, create)
+/* 用户修改密码 */
+userRouter.post('/update', verifyAuth, verifyPassword, updatePassword)
 /* 获取用户头像 */
 userRouter.get('/:userId/avatar', avatarInfo)
 /* 修改用户信息 */

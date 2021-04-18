@@ -54,9 +54,9 @@ const verifyAuth = async (ctx, next) => {
     const result = jwt.verify(token, PUBLIC_KEY, {
       algorithms: ['RS256']
     })
-    console.log(result)
     console.log('合法')
     ctx.user = result
+    console.log(ctx.user)
     await next()
   } catch(err) {
     console.log('不合法')
@@ -92,5 +92,5 @@ const verifyPermission = async (ctx, next) => {
 module.exports = {
   verifyLogin,
   verifyAuth,
-  verifyPermission
+  verifyPermission,
 }

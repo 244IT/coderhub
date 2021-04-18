@@ -12,4 +12,6 @@ authRouter.post('/', verifyLogin, login)
 
 /* 用户登录验证 */
 authRouter.get('/test', verifyAuth, success)
+
+
 module.exports = authRouter

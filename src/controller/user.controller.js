@@ -5,6 +5,8 @@ const { getAvatarByUserId } = require('../service/file.service')
 const UserService = require('../service/user.service')
 
 const { AVATAR_PATH } = require('../constants/file-paths')
+const md5password = require('../utils/handle-password')
+
 class UserController{
   /* 用户注册 */
   async create(ctx, next) {
@@ -15,6 +17,8 @@ class UserController{
       message: '注册成功'
     }
   }
+
+  /* 修改密码 */
 
   /* 获取头像 */
   async avatarInfo(ctx, next) {
@@ -41,10 +45,22 @@ class UserController{
     console.log(result)
     ctx.body = {
       message: '修改成功',
-      status: '10000'
+      status: '10000',
     }
-
   }  
+
+  /* 修改密码 */
+  async updatePassword(ctx, next) {
+    // 参数获取
+    let { newPassword } = ctx.request.body
+    newPassword = md5password(newPassword)
+    const { name } = ctx.user
+    const result = await UserService.updatePassword(newPassword, name)
+    ctx.body = {
+      message: '修改成功',
+      status: '10000',
+    }
+  }
 }
 
 module.exports = new UserController()
