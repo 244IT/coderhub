@@ -2,7 +2,7 @@ const Router = require('koa-router')
 
 const { verifyUser, handlePassword, verifyPassword } = require('../middleware/user.middleware')
 const { verifyAuth } = require('../middleware/auth.middleware') 
-const { create, avatarInfo, update, updatePassword } = require('../controller/user.controller')
+const { create, avatarInfo, update, updatePassword, labelList } = require('../controller/user.controller')
 
 
 const userRouter = new Router({

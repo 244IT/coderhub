@@ -18,8 +18,6 @@ class UserController{
     }
   }
 
-  /* 修改密码 */
-
   /* 获取头像 */
   async avatarInfo(ctx, next) {
     console.log('获取用户头像')

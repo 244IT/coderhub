@@ -20,12 +20,28 @@ class LabelService {
   }
 
   /* 获取标签列表 */
-  async list(size, page) {
+  async list(size, page, id) {
     const offset = (page - 1) * 10
-    const statement = `
-      SELECT * FROM label LIMIT ?, ?;
+    let statement = `
+      SELECT l.id, l.name, l.img_url
+      FROM label l
+      LIMIT ?, ?;
     `
-    const [result] = await connection.execute(statement, [offset, size])
+    let arr = [offset, size]
+    if(id) {
+      statement = `
+        SELECT l.id, l.name, l.img_url, IF(ul.user_id, 1, 0) follow
+        FROM label l
+        LEFT JOIN user_label ul
+        ON l.id = ul.label_id
+        LEFT JOIN user u
+        ON ul.user_id = u.id
+        WHERE ul.user_id = ? OR ul.user_id IS NULL
+        LIMIT ?, ?;
+      `
+      arr.unshift(id)
+    }
+    const [result] = await connection.execute(statement, arr)
     return result
   }
 
@@ -56,6 +72,38 @@ class LabelService {
         LIMIT ?, ?;
     `
     const result = await connection.execute(statement, [labelId, offset, size])
+    return result
+  }
+  /* 查询用户是否已经关注标签 */
+  async isUserFollow(userId, labelId) {
+    const statement = `
+      SELECT l.id, l.name, l.img_url, IF(ul.user_id, 1, 0) follow
+      FROM label l
+      LEFT JOIN user_label ul
+      ON l.id = ul.label_id
+      LEFT JOIN user u
+      ON ul.user_id = u.id
+      WHERE ul.user_id = ? AND ul.label_id = ?
+    `
+    const [[result]] = await connection.execute(statement, [userId, labelId])
+    return result
+  }
+
+  /* 关注标签 */
+  async followLabel(userId, labelId) {
+    const statement = `
+      INSERT INTO user_label (user_id, label_id) VALUES (?, ?);
+    `
+    const result = await connection.execute(statement, [userId, labelId])
+    return result
+  }
+
+  /* 取消关注标签 */
+  async unfollowLabel(userId, labelId) {
+    const statement = `
+      DELETE FROM user_label WHERE user_id = ? AND label_id = ?
+    `
+    const result = await connection.execute(statement, [userId, labelId])
     return result
   }
 }
