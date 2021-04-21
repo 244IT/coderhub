@@ -1,7 +1,7 @@
 const Router = require('koa-router')
 
 const { verifyAuth } = require('../middleware/auth.middleware')
-const { create, list, momentList, follow } = require('../controller/label.controller.js')
+const { create, list, momentList, user, follow } = require('../controller/label.controller.js')
 
 const labelRouter = new Router({
   prefix: '/label'
@@ -11,6 +11,8 @@ const labelRouter = new Router({
 labelRouter.post('/', verifyAuth, create)
 /* 获取标签列表 */
 labelRouter.get('/', list)
+/* 获取用户关注的标签列表 */
+labelRouter.get('/user', verifyAuth, user)
 /* 获取指定标签下的标签 */
 labelRouter.get('/:labelId', momentList)
 /* 用户关注，取消关注标签 */

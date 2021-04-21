@@ -17,6 +17,8 @@ class MomentService {
             SELECT m.id momentId, m.content, m.updateAt updateTime, m.createAt createTime, m.title,
                 JSON_OBJECT('userId', u.id, 'userName', u.name, 'avatar', u.avatar_url) author,
                 (SELECT COUNT(*) FROM comment c WHERE c.moment_id = m.id) commentCount,
+                (SELECT COUNT(*) FROM moment_favor uf WHERE uf.moment_id = m.id) favorCount,
+                (SELECT COUNT(*) FROM moment_favor uf WHERE uf.moment_id = m.id AND uf.user_id = ?) isFavor,
                 (SELECT JSON_ARRAYAGG(CONCAT('http://localhost:8000/moment/images/', file.filename))
                     FROM file
                     WHERE file.moment_id = m.id
@@ -45,6 +47,7 @@ class MomentService {
             SELECT m.id momentId, m.content, m.updateAt updateTime, m.createAt createTime, m.title, 
             JSON_OBJECT('userId', u.id, 'userName', u.name, 'avatar', u.avatar_url) author,
             (SELECT COUNT(*) FROM comment c WHERE c.moment_id = m.id) commentCount,
+            (SELECT COUNT(*) FROM moment_favor uf WHERE uf.moment_id = m.id) favorCount,
             (
                 SELECT JSON_ARRAYAGG(CONCAT('http://localhost:8000/moment/images/', file.filename))
                 FROM file
@@ -61,6 +64,7 @@ class MomentService {
             ON m.user_id = u.id
             WHERE m.title
             LIKE '%${keyword}%'
+            ORDER BY momentId
             LIMIT ?, ?;
         `
         const [result] = await connection.execute(statement, [offset, size])

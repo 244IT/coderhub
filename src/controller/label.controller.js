@@ -24,6 +24,24 @@ class LabelController {
       status: '10000'
     }
   }
+
+  /* 获取用户关注的标签列表 */
+  async user(ctx, next) {
+    console.log('获取用户关注的标签列表111')
+    const { id } = ctx.user
+    console.log('1')
+    const { page, size } = ctx.request.query
+    console.log(size, page, id)
+    const result = await LabelService.user(page, size, id)
+
+    console.log(result)
+    ctx.body = {
+      data: result,
+      message: 'SUCCESS',
+      status: '10000'
+    }
+    
+  }
   /* 获取指定标签下的动态 */
   async momentList(ctx, next) {
     const { labelId } = ctx.params

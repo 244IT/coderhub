@@ -21,7 +21,7 @@ class LabelService {
 
   /* 获取标签列表 */
   async list(size, page, id) {
-    const offset = (page - 1) * 10
+    const offset = (page - 1) * size
     let statement = `
       SELECT l.id, l.name, l.img_url
       FROM label l
@@ -42,6 +42,23 @@ class LabelService {
       arr.unshift(id)
     }
     const [result] = await connection.execute(statement, arr)
+    return result
+  }
+
+  /* 获取用户关注的标签列表 */
+  async user(page, size, id) {
+    const offset = (page - 1) * size
+    const statement = `
+      SELECT l.id, l.name, l.img_url, IF(ul.user_id, 1, 0) follow
+      FROM user_label ul
+      LEFT JOIN user u 
+      ON u.id = ul.user_id
+      LEFT JOIN label l
+      ON ul.label_id = l.id
+      WHERE ul.user_id = ?
+      LIMIT ?, ?;
+    `
+    const [result] = await connection.execute(statement, [id, offset, size])
     return result
   }
 
