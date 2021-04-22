@@ -11,14 +11,14 @@ class MomentService {
     }
 
     /* 获取动态详情 */
-    async detail(momentId) {
-        console.log(momentId)
-        const statement = `
+    async detail(momentId, id) {
+        console.log(momentId, id)
+        let arr = [momentId]
+        let statement = `
             SELECT m.id momentId, m.content, m.updateAt updateTime, m.createAt createTime, m.title,
                 JSON_OBJECT('userId', u.id, 'userName', u.name, 'avatar', u.avatar_url) author,
-                (SELECT COUNT(*) FROM comment c WHERE c.moment_id = m.id) commentCount,
+                (SELECT COUNT(*) FROM comment c WHERE c.moment_id = m.id AND c.comment_id IS NULL) commentCount,
                 (SELECT COUNT(*) FROM moment_favor uf WHERE uf.moment_id = m.id) favorCount,
-                (SELECT COUNT(*) FROM moment_favor uf WHERE uf.moment_id = m.id AND uf.user_id = ?) isFavor,
                 (SELECT JSON_ARRAYAGG(CONCAT('http://localhost:8000/moment/images/', file.filename))
                     FROM file
                     WHERE file.moment_id = m.id
@@ -34,7 +34,34 @@ class MomentService {
             ON m.user_id = u.id
             WHERE m.id = ?; 
         `
-        const [[result]] = await connection.execute(statement, [momentId])
+        if(id) {
+            arr.unshift(id)
+            statement = `
+                SELECT m.id momentId, m.content, m.updateAt updateTime, m.createAt createTime, m.title,
+                    JSON_OBJECT('userId', u.id, 'userName', u.name, 'avatar', u.avatar_url) author,
+                    (SELECT COUNT(*) FROM comment c WHERE c.moment_id = m.id AND c.comment_id IS NULL) commentCount,
+                    (SELECT COUNT(*) FROM moment_favor uf WHERE uf.moment_id = m.id) favorCount,
+                    (SELECT COUNT(*) FROM moment_favor uf WHERE uf.moment_id = m.id AND uf.user_id = ?) isFavor,
+                    (SELECT JSON_ARRAYAGG(CONCAT('http://localhost:8000/moment/images/', file.filename))
+                        FROM file
+                        WHERE file.moment_id = m.id
+                    ) images,
+                    (SELECT JSON_ARRAYAGG(l.name)
+                        FROM moment_label ml 
+                        LEFT JOIN label l
+                        ON ml.label_id = l.id
+                        WHERE ml.moment_id = m.id
+                    ) labelList
+                FROM moment m
+                LEFT JOIN user u
+                ON m.user_id = u.id
+                WHERE m.id = ?; 
+            `
+        }
+        console.log('查询')
+        const [[result]] = await connection.execute(statement, arr)
+        console.log('结果')
+        console.log(result)
         return result
     }
 
@@ -46,7 +73,7 @@ class MomentService {
         const statement = `
             SELECT m.id momentId, m.content, m.updateAt updateTime, m.createAt createTime, m.title, 
             JSON_OBJECT('userId', u.id, 'userName', u.name, 'avatar', u.avatar_url) author,
-            (SELECT COUNT(*) FROM comment c WHERE c.moment_id = m.id) commentCount,
+            (SELECT COUNT(*) FROM comment c WHERE c.moment_id = m.id AND c.comment_id IS NULL) commentCount,
             (SELECT COUNT(*) FROM moment_favor uf WHERE uf.moment_id = m.id) favorCount,
             (
                 SELECT JSON_ARRAYAGG(CONCAT('http://localhost:8000/moment/images/', file.filename))

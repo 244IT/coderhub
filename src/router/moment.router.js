@@ -19,7 +19,6 @@ momentRouter.post('/:momentId', verifyAuth, verifyPermission, update)
 momentRouter.delete('/:momentId', verifyAuth, verifyPermission, remove)
 /* 动态添加标签接口 */
 momentRouter.post("/:momentId/labels", verifyAuth, verifyPermission, verifyLabelExist, addLabel)
-
 /* 获取某个用户的动态 */
 momentRouter.get('/userList', verifyAuth, userList)
 /* 动态配图服务 */

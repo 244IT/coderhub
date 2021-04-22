@@ -27,8 +27,11 @@ class MomentController{
     async detail(ctx, next) {
         // 获取动态id
         const { id } = ctx.params
+        const { uid } = ctx.request.query
+        console.log('获取动态详情')
+        console.log(id, uid, typeof uid)
         // 获取动态详情（操作数据库）
-        const result = await MomentService.detail(id)
+        const result = await MomentService.detail(id, uid)
         ctx.body = {
             data: result,
             status: '10000',

@@ -30,14 +30,7 @@ class LabelService {
     let arr = [offset, size]
     if(id) {
       statement = `
-        SELECT l.id, l.name, l.img_url, IF(ul.user_id, 1, 0) follow
-        FROM label l
-        LEFT JOIN user_label ul
-        ON l.id = ul.label_id
-        LEFT JOIN user u
-        ON ul.user_id = u.id
-        WHERE ul.user_id = ? OR ul.user_id IS NULL
-        LIMIT ?, ?;
+        SELECT l.id, l.name, l.img_url, (IF(l.id IN (SELECT ul.label_id FROM user_label ul WHERE ul.user_id = ?), 1, 0)) follow FROM label l LIMIT ?, ?;
       `
       arr.unshift(id)
     }
