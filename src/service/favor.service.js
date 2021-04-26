@@ -32,6 +32,40 @@ class FavorService{
         return result
     }
 
+
+    /* 获取用户点赞的动态 */
+    async getMomentList(id, size, page) {
+        const offset = (page - 1) * 10
+        const statement = `
+            SELECT m.id momentId, m.content, m.updateAt updateTime, m.createAt createTime, m.title, mf.createAt favorTime, 
+            JSON_OBJECT('userId', u.id, 'userName', u.name, 'avatar', u.avatar_url) author,
+            (SELECT COUNT(*) FROM comment c WHERE c.moment_id = m.id) commentCount,
+            (SELECT COUNT(*) FROM moment_favor uf WHERE uf.moment_id = m.id) favorCount,
+            (
+                    SELECT JSON_ARRAYAGG(CONCAT('http://47.103.223.170:8000/moment/images/', file.filename))
+                    FROM file
+                    WHERE file.moment_id = m.id
+            ) images,
+            (SELECT JSON_ARRAYAGG(l.name)
+                    FROM moment_label ml 
+                    LEFT JOIN label l
+                    ON ml.label_id = l.id
+                    WHERE ml.moment_id = m.id
+            ) labelList
+            FROM moment m 
+            LEFT JOIN user u
+            ON m.user_id = u.id
+            LEFT JOIN moment_label ml
+            ON m.id = ml.moment_id
+            RIGHT JOIN moment_favor mf
+            ON m.id = mf.moment_id
+            WHERE mf.user_id = ?
+            ORDER BY mf.createAt DESC
+            LIMIT ?, ?;
+        `
+        const [result] = await connection.execute(statement, [id, offset, size])
+        return result
+    }
     /* ---------------------------------------------评论相关--------------------------------------------- */
 
     /* 评论点赞 */

@@ -1,19 +1,22 @@
 const Router = require('koa-router')
 
 const { verifyAuth } = require('../middleware/auth.middleware')
-const { moment, comment } = require('../controller/favor.controller.js')
+const { moment, comment, getMomentList } = require('../controller/favor.controller.js')
 
-const labelRouter = new Router({
+const favorRouter = new Router({
   prefix: '/favor'
 })
 
 // 文章点赞接口
-labelRouter.post('/moment', verifyAuth, moment)
+favorRouter.post('/moment', verifyAuth, moment)
 
 // 评论点赞接口
-labelRouter.post('/comment', verifyAuth, comment)
+favorRouter.post('/comment', verifyAuth, comment)
+
+// 获取用户点赞的文章
+favorRouter.get('/getMomentList', verifyAuth, getMomentList)
 
 
-module.exports = labelRouter
+module.exports = favorRouter
 
 

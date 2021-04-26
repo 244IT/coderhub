@@ -51,6 +51,22 @@ class FavorController{
             status: '10000',
         }
     }
+
+    /* 获取用户点赞的文章 */
+    async getMomentList(ctx, next) {
+        console.log('获取点赞')
+        
+        const { id } = ctx.user
+        const { page, size } = ctx.request.query
+        console.log(id)
+        const result = await FavorService.getMomentList(id, size, page)
+        console.log(result)
+        ctx.body = {
+            data: result,
+            message: 'SUCCESS',
+            status: '10000',
+        }
+    }
 }   
 
 module.exports = new FavorController()

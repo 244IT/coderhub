@@ -62,6 +62,7 @@ class LabelService {
         SELECT m.id momentId, m.content, m.updateAt updateTime, m.createAt createTime, m.title, 
         JSON_OBJECT('userId', u.id, 'userName', u.name, 'avatar', u.avatar_url) author,
         (SELECT COUNT(*) FROM comment c WHERE c.moment_id = m.id) commentCount,
+        (SELECT COUNT(*) FROM moment_favor uf WHERE uf.moment_id = m.id) favorCount,
         (
             SELECT JSON_ARRAYAGG(CONCAT('http://localhost:8000/moment/images/', file.filename))
             FROM file
