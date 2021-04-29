@@ -63,10 +63,12 @@ class CommentController{
 
   /* 获取动态下的评论列表 */
   async list(ctx, next) {
+    console.log('获取动态下的评论')
     // 获取动态的id
-    const { momentId } = ctx.request.query
+    const { momentId, uid } = ctx.request.query
+    console.log(momentId, uid)
     // 根据动态id获取评论列表
-    const result = await CommentService.getCommentsByMomentId(momentId)
+    const result = await CommentService.getCommentsByMomentId(momentId, uid)
     ctx.body = {
       data: result,
       message: 'SUCCESS',

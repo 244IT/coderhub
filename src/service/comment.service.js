@@ -39,7 +39,7 @@ class CommentService {
   }
 
   /* 根据动态id获取评论列表 */
-  async getCommentsByMomentId(momentId) {
+  async getCommentsByMomentId(momentId, id) {
     let arr = [momentId]
     let statement = `
       SELECT 
