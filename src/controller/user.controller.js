@@ -37,6 +37,8 @@ class UserController{
   async update(ctx, next) {
     // 获取参数
     const { name, sign } = ctx.request.body
+    console.log('修改用户信息')
+    console.log(name, sign)
     const { id } = ctx.user
     // 修改用户信息
     const result = await UserService.updateUserInfo(name, sign, id)
