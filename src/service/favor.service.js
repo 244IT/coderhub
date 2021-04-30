@@ -39,7 +39,7 @@ class FavorService{
         const statement = `
             SELECT m.id momentId, m.content, m.updateAt updateTime, m.createAt createTime, m.title, mf.createAt favorTime, 
             JSON_OBJECT('userId', u.id, 'userName', u.name, 'avatar', u.avatar_url) author,
-            (SELECT COUNT(*) FROM comment c WHERE c.moment_id = m.id) commentCount,
+            (SELECT COUNT(*) FROM comment c WHERE c.moment_id = m.id AND c.comment_id IS NULL) commentCount,
             (SELECT COUNT(*) FROM moment_favor uf WHERE uf.moment_id = m.id) favorCount,
             (
                     SELECT JSON_ARRAYAGG(CONCAT('http://47.103.223.170:8000/moment/images/', file.filename))
