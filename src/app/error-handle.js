@@ -32,6 +32,10 @@ const errorHandle = (error, ctx) => {
       status = 401;
       message = '没有操作的权限~';
       break;
+    case errorType.COLLECTIONEXIST:
+      status = 409;
+      message = '收藏夹已存在~';
+      break;
     default: 
       status = 404;
       message = 'NOT FOUNT';

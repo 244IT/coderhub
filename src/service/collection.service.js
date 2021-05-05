@@ -29,9 +29,9 @@ class CollectionService{
         const statement = `
             SELECT ucm.moment_id 
             FROM user_collection_moment ucm
-            WHERE moment_id = ? AND user_id = ? AND collection_id = ?;
+            WHERE moment_id = ? AND user_id = ?;
         `
-        const [result] = await connection.execute(statement, [momentId, uid, collectionId])
+        const [result] = await connection.execute(statement, [momentId, uid])
         return result
     }
 
@@ -65,12 +65,12 @@ class CollectionService{
     }
 
     /* 用户取消收藏文章 */
-    async noCollectionMoment(momentId, uid, collectionId) {
+    async noCollectionMoment(momentId, uid) {
         const statement = `
             DELETE FROM user_collection_moment
-            WHERE moment_id = ? AND user_id = ? AND collection_id = ?;
+            WHERE moment_id = ? AND user_id = ?;
         `
-        const [result] = await connection.execute(statement, [momentId, uid, collectionId])
+        const [result] = await connection.execute(statement, [momentId, uid])
         console.log(result)
         return result
     }
@@ -122,6 +122,43 @@ class CollectionService{
         `
 
         const [result] = await connection.execute(statement, [id, collectionId])
+        return result
+    }
+
+    /* 获取这个收藏夹名称被几个用户所取名 */
+    async getCollectionCount(name) {
+        console.log('获取这个收藏夹名称被几个用户所取名:' + name)
+        const statement = `
+            SELECT COUNT(uc.user_id) count, (SELECT id FROM collection WHERE name = ?) id FROM collection c
+            LEFT JOIN user_collection uc
+            ON c.id = uc.collection_id
+            WHERE name = ?;
+        ` 
+
+        const [[result]] = await connection.execute(statement, [name, name])
+        console.log(result)
+        return result
+    }
+
+    /* 修改用户收藏夹的id为新收藏夹的id */
+    async updateUserCollection(nId, oId, uid) {
+        console.log(nId, oId, uid)
+        const statement = `
+            UPDATE user_collection uc SET uc.collection_id = ? WHERE uc.user_id = ? AND uc.collection_id = ?;
+        `
+        const [result] = await connection.execute(statement, [nId, uid, oId])
+        return result
+    }
+
+    /* 修改收藏夹的名称 */
+    async rename(oName, nName) {
+        console.log('修改收藏夹名称')
+        console.log(oName, nName)
+        const statement = `
+            UPDATE collection SET name = ? WHERE name = ?
+        `
+
+        const [result] = await connection.execute(statement, [nName, oName])
         return result
     }
 }

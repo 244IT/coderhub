@@ -5,6 +5,7 @@ const PASSWORD_ERROR = 'password error'
 const UNAUTHORIZATION = 'unauthorization'
 const UNPERMISSION = 'unpermision'
 const PASSWORD_UNLIKE = 'password unlike'
+const COLLECTIONEXIST = 'collection exist'
 
 
 module.exports = {
@@ -14,5 +15,6 @@ module.exports = {
   PASSWORD_ERROR,
   UNAUTHORIZATION,
   UNPERMISSION,
-  PASSWORD_UNLIKE
+  PASSWORD_UNLIKE,
+  COLLECTIONEXIST
 }

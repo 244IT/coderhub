@@ -22,7 +22,7 @@ collectionRouter.get('/list', verifyAuth, list)
 collectionRouter.get('/momentList', verifyAuth, momentList)
 
 /* 用户收藏夹修改名称 */
-collectionRouter.post('/rename', verifyAuth, rename)
+collectionRouter.post('/rename', verifyAuth, verifyCollectionExist, rename)
 
 
 

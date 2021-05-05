@@ -35,13 +35,14 @@ class MomentService {
             WHERE m.id = ?; 
         `
         if(id) {
-            arr.unshift(id)
+            arr.unshift(id, id)
             statement = `
                 SELECT m.id momentId, m.content, m.updateAt updateTime, m.createAt createTime, m.title,
                     JSON_OBJECT('userId', u.id, 'userName', u.name, 'avatar', u.avatar_url) author,
                     (SELECT COUNT(*) FROM comment c WHERE c.moment_id = m.id AND c.comment_id IS NULL) commentCount,
                     (SELECT COUNT(*) FROM moment_favor uf WHERE uf.moment_id = m.id) favorCount,
                     (SELECT COUNT(*) FROM moment_favor uf WHERE uf.moment_id = m.id AND uf.user_id = ?) isFavor,
+                    (SELECT COUNT(*) FROM user_collection_moment ucf WHERE ucf.moment_id = m.id AND ucf.user_id = ?) isCollect,
                     (SELECT JSON_ARRAYAGG(CONCAT('http://localhost:8000/moment/images/', file.filename))
                         FROM file
                         WHERE file.moment_id = m.id
@@ -59,6 +60,7 @@ class MomentService {
             `
         }
         console.log('查询')
+        console.log(arr)
         const [[result]] = await connection.execute(statement, arr)
         console.log('结果')
         console.log(result)

@@ -1,5 +1,7 @@
 const CollectionService = require('../service/collection.service')
 
+const errorType = require('../constants/error-types')
+
 class CollectionController{
 
     /* 用户添加收藏夹 */
@@ -7,18 +9,22 @@ class CollectionController{
         const { id } = ctx.collection
         const uid = ctx.user.id
         console.log(id, uid)
-        let msg = '用户已添加此收藏夹'
         /* 查询此用户是否已经添加此收藏夹 */
         const collection = await CollectionService.getCollectionByUser(uid, id)
 
-        /* 用户没添加此收藏夹，则添加 */
-        if(!collection.length) {
-            await CollectionService.user(id, uid)
-            msg = '添加成功'
+        /* 用户已添加 */
+        if(collection.length) {
+            const error = new Error(errorType.COLLECTIONEXIST)
+            return ctx.app.emit('error', error, ctx)
         }
-        
+
+        await CollectionService.user(id, uid)
+ 
         ctx.body = {
-            message: msg,
+            data: {
+                collectionId: id
+            },
+            message: '添加成功',
             status: '10000',
         }
     }
@@ -31,11 +37,11 @@ class CollectionController{
         console.log(momentId, uid, collectionId)
         let msg = '收藏成功'
         // 查询此文章是否已经被收藏
-        const collectionMoment = await CollectionService.getCollectioMomentByUser(momentId, uid, collectionId)
+        const collectionMoment = await CollectionService.getCollectioMomentByUser(momentId, uid)
         console.log(collectionMoment)
         if(collectionMoment.length) {
             msg = '取消收藏成功'
-            await CollectionService.noCollectionMoment(momentId, uid, collectionId)
+            await CollectionService.noCollectionMoment(momentId, uid)
         }else {
             await CollectionService.collectionMoment(momentId, uid, collectionId)
         }
@@ -78,13 +84,18 @@ class CollectionController{
 
     /* 用户收藏夹修改名称 */
     async rename(ctx, next) {
-        const { id } = ctx.user
-        const { name } = ctx.request.body
+        const uid = ctx.user.id
+        const { id } = ctx.collection // 新收藏夹的id
+        const oName = ctx.request.body.name // 旧收藏夹的名称
 
-        const result = await CollectionService.rename(id, name)
+        const msg = '修改成功'
+        const result = await CollectionService.getCollectionCount(oName)
+        await CollectionService.updateUserCollection(id, result.id, uid,)
+
+        // const result = await CollectionService.rename(id, name)
 
         ctx.body = {
-            message: '修改成功',
+            message: msg,
             status: '10000'
         }
     }
