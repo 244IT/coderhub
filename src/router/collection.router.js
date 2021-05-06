@@ -1,7 +1,7 @@
 const Router = require("koa-router");
 const { verifyAuth } = require("../middleware/auth.middleware");
 const { verifyCollectionExist } = require('../middleware/collection.middleware')
-const { user, moment, momentList, list, rename } = require('../controller/collection.controller')
+const { user, moment, momentList, list, rename, remove } = require('../controller/collection.controller')
 
 
 const collectionRouter = new Router({
@@ -24,6 +24,8 @@ collectionRouter.get('/momentList', verifyAuth, momentList)
 /* 用户收藏夹修改名称 */
 collectionRouter.post('/rename', verifyAuth, verifyCollectionExist, rename)
 
+/* 用户删除收藏夹 */
+collectionRouter.post('/remove', verifyAuth, remove)
 
 
 module.exports = collectionRouter

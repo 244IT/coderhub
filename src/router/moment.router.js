@@ -1,8 +1,23 @@
 const Router = require('koa-router')
 
-const { create, detail, list, update, remove, addLabel, fileInfo, userList } = require('../controller/moment.controller.js')
-const { verifyAuth, verifyPermission } = require('../middleware/auth.middleware')
+const { 
+    create, 
+    detail, 
+    list, 
+    update, 
+    remove, 
+    addLabel, 
+    fileInfo, 
+    userList, 
+    footprint,
+    footprintList 
+} = require('../controller/moment.controller.js')
+const { 
+    verifyAuth, 
+    verifyPermission 
+} = require('../middleware/auth.middleware')
 const { verifyLabelExist } = require('../middleware/label.middleware')
+
 const momentRouter = new Router({
     prefix: '/moment'
 }) 
@@ -13,6 +28,10 @@ momentRouter.post('/create', verifyAuth, create)
 momentRouter.get('/detail/:id', detail)
 /* 获取动态列表 */
 momentRouter.get('/list', list)
+/* 用户添加动态足迹 */
+momentRouter.post('/footprint', verifyAuth, footprint)
+/* 获取用户的足迹列表 */
+momentRouter.get('/footprintList', verifyAuth, footprintList)
 /* 修改动态 */
 momentRouter.post('/:momentId', verifyAuth, verifyPermission, update)
 /* 删除动态 */
@@ -23,6 +42,7 @@ momentRouter.post("/:momentId/labels", verifyAuth, verifyPermission, verifyLabel
 momentRouter.get('/userList', verifyAuth, userList)
 /* 动态配图服务 */
 momentRouter.get('/images/:filename', fileInfo)
+
 
 
 module.exports = momentRouter

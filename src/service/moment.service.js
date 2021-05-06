@@ -93,7 +93,7 @@ class MomentService {
             ON m.user_id = u.id
             WHERE m.title
             LIKE '%${keyword}%'
-            ORDER BY momentId
+            ORDER BY createTime DESC
             LIMIT ?, ?;
         `
         const [result] = await connection.execute(statement, [offset, size])
@@ -183,6 +183,51 @@ class MomentService {
             INSERT INTO moment_label (moment_id, label_id) VALUES (?, ?);
         `
         const [result] = await connection.execute(statement, [momentId, labelId])
+        return result
+    }
+
+    /* 查询用户是否已经浏览过此文章 */
+
+    /* 添加足迹 */
+    async footprint(uid, momentId) {
+        const statement = `
+            INSERT INTO moment_footprint (user_id, moment_id) VALUES (?, ?);
+        `
+        const [result] = await connection.execute(statement, [uid, momentId])
+        return result
+    }
+
+    /* 获取用户地 浏览记录 */
+    async footprintList(id, size, page) {
+        const offset = (page - 1) * 10
+        const statement = `
+            SELECT m.id momentId, m.content, m.updateAt updateTime, m.createAt createTime, m.title, mf.createAt favorTime, 
+            JSON_OBJECT('userId', u.id, 'userName', u.name, 'avatar', u.avatar_url) author,
+            (SELECT COUNT(*) FROM comment c WHERE c.moment_id = m.id AND c.comment_id IS NULL) commentCount,
+            (SELECT COUNT(*) FROM moment_favor uf WHERE uf.moment_id = m.id) favorCount,
+            (
+                            SELECT JSON_ARRAYAGG(CONCAT('http://47.103.223.170:8000/moment/images/', file.filename))
+                            FROM file
+                            WHERE file.moment_id = m.id
+            ) images,
+            (SELECT JSON_ARRAYAGG(l.name)
+                            FROM moment_label ml 
+                            LEFT JOIN label l
+                            ON ml.label_id = l.id
+                            WHERE ml.moment_id = m.id
+            ) labelList
+            FROM moment m 
+            LEFT JOIN user u
+            ON m.user_id = u.id
+            LEFT JOIN moment_label ml
+            ON m.id = ml.moment_id
+            RIGHT JOIN moment_footprint mf
+            ON m.id = mf.moment_id
+            WHERE mf.user_id = ?
+            ORDER BY mf.updateAt DESC
+            LIMIT ?, ?;
+        `
+        const [result] = await connection.execute(statement, [id, offset, size])
         return result
     }
 }

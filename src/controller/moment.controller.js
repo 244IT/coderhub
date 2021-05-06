@@ -133,6 +133,35 @@ class MomentController{
         ctx.body = fs.createReadStream(`${PICTURE_PATH}/${filename}`)      
     }
 
+    /* 用户添加动态足迹 */
+    async footprint(ctx, next) {
+        console.log('添加足迹')
+        const { id } = ctx.user
+        const { momentId } = ctx.request.body
+        console.log(id, momentId)
+        try{
+            await MomentService.footprint(id, momentId)
+        }catch(e) {
+            console.log(e)
+        }
+        ctx.body = {
+            message: 'SUCCESS',
+            status: '10000'
+        }
+    }
+
+    /* 获取用户的浏览记录 */
+    async footprintList(ctx, next) {
+        const { id } = ctx.user
+        const { page, size } = ctx.request.query
+        const result = await MomentService.footprintList(id, size, page)
+        ctx.body = {
+            data: result,
+            message: 'SUCCESS',
+            status: '10000'
+        }
+    }
+
 }
 
 

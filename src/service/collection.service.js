@@ -161,6 +161,32 @@ class CollectionService{
         const [result] = await connection.execute(statement, [nName, oName])
         return result
     }
+
+    /* 删除收藏夹 */
+    async removeCollection(uid, collectionId) {
+        const statement = `
+            DELETE FROM user_collection WHERE user_id = ? AND collection_id = ?;
+        `
+        await connection.execute(statement, [uid, collectionId])
+
+    }
+
+    /* 删除收藏夹下的文章 */
+    async removeCollectionMoment(uid, collectionId, momentId) {
+        let statement = `
+            DELETE FROM user_collection_moment WHERE user_id = ? AND collection_id = ?;
+        `
+        let arr = [uid, collectionId]
+        if(momentId && momentId !== 'undefined') {
+            arr.push(momentId)
+            statement = `
+                DELETE FROM user_collection_moment 
+                WHERE user_id = ? AND collection_id = ? AND moment_id = ?;
+            `
+        }
+        const result = await connection.execute(statement, arr)
+        return result
+    }
 }
 
 module.exports = new CollectionService()

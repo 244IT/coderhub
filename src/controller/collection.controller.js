@@ -88,14 +88,39 @@ class CollectionController{
         const { id } = ctx.collection // 新收藏夹的id
         const oName = ctx.request.body.name // 旧收藏夹的名称
 
-        const msg = '修改成功'
+        /* 查询此用户是否已经添加此收藏夹 */
+        const collection = await CollectionService.getCollectionByUser(uid, id)
+
+        /* 用户已添加 */
+        if(collection.length) {
+            const error = new Error(errorType.COLLECTIONEXIST)
+            return ctx.app.emit('error', error, ctx)
+        }
+
         const result = await CollectionService.getCollectionCount(oName)
         await CollectionService.updateUserCollection(id, result.id, uid,)
 
-        // const result = await CollectionService.rename(id, name)
+        ctx.body = {
+            message: '修改成功',
+            status: '10000'
+        }
+    }
+
+    /* 用户删除收藏夹 */
+    async remove(ctx, next) {
+        const { id } = ctx.user
+        const { collectionId } = ctx.request.body
+        console.log(id, collectionId)
+        try {         
+            await CollectionService.removeCollection(id, collectionId)
+            await CollectionService.removeCollectionMoment(id, collectionId)
+        }catch(e) {
+            console.log(e)
+        }
+
 
         ctx.body = {
-            message: msg,
+            message: 'SUCCESS',
             status: '10000'
         }
     }
