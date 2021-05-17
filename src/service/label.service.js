@@ -1,4 +1,5 @@
 const connection = require('../app/database')
+const { APP_HOST, APP_PORT } = require('../app/config')
 
 class LabelService {
   /* 创建标签 */
@@ -64,12 +65,12 @@ class LabelService {
         (SELECT COUNT(*) FROM comment c WHERE c.moment_id = m.id) commentCount,
         (SELECT COUNT(*) FROM moment_favor uf WHERE uf.moment_id = m.id) favorCount,
         (
-            SELECT JSON_ARRAYAGG(CONCAT('http://localhost:8000/moment/images/', file.filename))
+            SELECT JSON_ARRAYAGG(CONCAT('${APP_HOST}:${APP_PORT}/moment/images/', file.filename))
             FROM file
             WHERE file.moment_id = m.id
         ) images,
         (SELECT JSON_ARRAYAGG(l.name)
-            FROM moment_label ml 
+            FROM label_moment ml 
             LEFT JOIN label l
             ON ml.label_id = l.id
             WHERE ml.moment_id = m.id
@@ -77,7 +78,7 @@ class LabelService {
         FROM moment m 
         LEFT JOIN user u
         ON m.user_id = u.id
-        LEFT JOIN moment_label ml
+        LEFT JOIN label_moment ml
         ON m.id = ml.moment_id
         WHERE ml.label_id = ?
         LIMIT ?, ?;

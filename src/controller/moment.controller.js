@@ -139,8 +139,16 @@ class MomentController{
         const { id } = ctx.user
         const { momentId } = ctx.request.body
         console.log(id, momentId)
+        // 查询用户是否已经浏览过
+        const result = await MomentService.getFootprintByUser(momentId, id)
+        console.log(result.length)
+        // 已经存在足迹则修改足迹
         try{
-            await MomentService.footprint(id, momentId)
+            if(result.length) {
+                await MomentService.updateFootprint(momentId, id)
+            }else {
+                await MomentService.footprint(momentId, id)
+            }
         }catch(e) {
             console.log(e)
         }

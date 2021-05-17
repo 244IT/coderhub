@@ -1,0 +1,5 @@
+# dependencies  npm包文件
+/node_modules
+
+# 密钥
+/src/app/keys

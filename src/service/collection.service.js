@@ -1,4 +1,5 @@
 const connection = require('../app/database')
+const { APP_HOST, APP_PORT } = require('../app/config')
 
 class CollectionService{
 
@@ -27,8 +28,8 @@ class CollectionService{
     async getCollectioMomentByUser(momentId, uid, collectionId) {
         console.log(momentId, uid, collectionId)
         const statement = `
-            SELECT ucm.moment_id 
-            FROM user_collection_moment ucm
+            SELECT cm.moment_id 
+            FROM collection_moment cm
             WHERE moment_id = ? AND user_id = ?;
         `
         const [result] = await connection.execute(statement, [momentId, uid])
@@ -56,7 +57,7 @@ class CollectionService{
     /* 用户收藏文章 */
     async collectionMoment(momentId, uid, collectionId) {
         const statement = `
-            INSERT INTO user_collection_moment (user_id, collection_id, moment_id) 
+            INSERT INTO collection_moment (user_id, collection_id, moment_id) 
             VALUES (?, ?, ?);
         `
         const [result] = await connection.execute(statement, [uid, collectionId, momentId])
@@ -67,7 +68,7 @@ class CollectionService{
     /* 用户取消收藏文章 */
     async noCollectionMoment(momentId, uid) {
         const statement = `
-            DELETE FROM user_collection_moment
+            DELETE FROM collection_moment
             WHERE moment_id = ? AND user_id = ?;
         `
         const [result] = await connection.execute(statement, [momentId, uid])
@@ -79,7 +80,7 @@ class CollectionService{
     async list(uid) {
         const statement = `
             SELECT u.id uid, c.id collectionId, c.name, 
-                (SELECT COUNT(*) FROM user_collection_moment ucm WHERE ucm.user_id = u.id AND ucm.collection_id = c.id) momentCount
+                (SELECT COUNT(*) FROM collection_moment cm WHERE cm.user_id = u.id AND cm.collection_id = c.id) momentCount
             FROM user_collection uc
             LEFT JOIN user u
             ON uc.user_id = u.id
@@ -100,12 +101,12 @@ class CollectionService{
             (SELECT COUNT(*) FROM comment c WHERE c.moment_id = m.id AND c.comment_id IS NULL) commentCount,
             (SELECT COUNT(*) FROM moment_favor uf WHERE uf.moment_id = m.id) favorCount,
             (
-                SELECT JSON_ARRAYAGG(CONCAT('http://47.103.223.170:8000/moment/images/', file.filename))
+                SELECT JSON_ARRAYAGG(CONCAT('${APP_HOST}:${APP_PORT}/moment/images/', file.filename))
                 FROM file
                 WHERE file.moment_id = m.id
             ) images,
             (SELECT JSON_ARRAYAGG(l.name)
-                FROM moment_label ml 
+                FROM label_moment ml 
                 LEFT JOIN label l
                 ON ml.label_id = l.id
                 WHERE ml.moment_id = m.id
@@ -113,12 +114,12 @@ class CollectionService{
             FROM moment m 
             LEFT JOIN user u
             ON m.user_id = u.id
-            LEFT JOIN moment_label ml
+            LEFT JOIN label_moment ml
             ON m.id = ml.moment_id
-            RIGHT JOIN user_collection_moment ucm
-            ON m.id = ucm.moment_id
-            WHERE ucm.user_id = ? AND collection_id = ?
-            ORDER BY ucm.createAt DESC;
+            RIGHT JOIN collection_moment cm
+            ON m.id = cm.moment_id
+            WHERE cm.user_id = ? AND collection_id = ?
+            ORDER BY cm.createAt DESC;
         `
 
         const [result] = await connection.execute(statement, [id, collectionId])
@@ -174,13 +175,13 @@ class CollectionService{
     /* 删除收藏夹下的文章 */
     async removeCollectionMoment(uid, collectionId, momentId) {
         let statement = `
-            DELETE FROM user_collection_moment WHERE user_id = ? AND collection_id = ?;
+            DELETE FROM collection_moment WHERE user_id = ? AND collection_id = ?;
         `
         let arr = [uid, collectionId]
         if(momentId && momentId !== 'undefined') {
             arr.push(momentId)
             statement = `
-                DELETE FROM user_collection_moment 
+                DELETE FROM collection_moment 
                 WHERE user_id = ? AND collection_id = ? AND moment_id = ?;
             `
         }
