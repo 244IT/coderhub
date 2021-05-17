@@ -145,6 +145,7 @@ class MomentService {
             LEFT JOIN user u
             ON m.user_id = u.id
             WHERE u.id = ?
+            ORDER BY createTime DESC
             LIMIT ?, ?;
         `
         const [result] = await connection.execute(statement, [userId, offset, size])
@@ -214,7 +215,7 @@ class MomentService {
         return result
     }
 
-    /* 获取用户地 浏览记录 */
+    /* 获取用户的 浏览记录 */
     async footprintList(id, size, page) {
         const offset = (page - 1) * 10
         const statement = `
