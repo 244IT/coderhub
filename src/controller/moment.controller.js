@@ -31,7 +31,11 @@ class MomentController{
         console.log('获取动态详情')
         console.log(id, uid, typeof uid)
         // 获取动态详情（操作数据库）
-        const result = await MomentService.detail(id, uid)
+        try{
+            const result = await MomentService.detail(id, uid)
+        }catch(err) {
+            console.log(err)
+        }
         ctx.body = {
             data: result,
             status: '10000',
@@ -43,9 +47,14 @@ class MomentController{
     async list(ctx, next) {
         // 获取列表大小和页数
         const { size, page, keyword } = ctx.request.query
-        console.log(keyword)
+        let result
         // 获取动态列表（操作数据库）
-        const result = await MomentService.list(size, page, keyword)
+        try {
+            result = await MomentService.list(size, page, keyword)
+        }catch(err) {
+            console.log(err)
+        }
+        
         ctx.body = {
             data: result,
             status: '10000',
